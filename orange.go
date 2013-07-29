@@ -16,7 +16,7 @@ import (
 	"net/http"
 )
 
-// hander http request
+// Hander http request
 func dispatch(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/favicon.ico" {
 		return
@@ -37,14 +37,14 @@ func main() {
 	flag.IntVar(&Config.port, "port", 4000, "Static server port, The port must>1024, default 4000")
 	flag.IntVar(&Config.portproxy, "portproxy", 0, "Proxy http://localhost:{{port}}/ when file saved refresh browser, set 0 not proxy")
 	flag.StringVar(&Config.dir, "dir", "./", "Watch dir which change will refresh the browser, default current dir")
-	flag.StringVar(&Config.ignores, "ignores", "", "Not watch files, default not ignore")
+	flag.StringVar(&Config.ignores, "ignores", "", "Not watch files, split width `,` Not regexp like `.go,.git/`, default not ignore")
 	flag.Parse()
 
 	os.Chdir(Config.dir)
 	Config.dir, _ = os.Getwd()
 
 	println("-------------------------------------------------------------------------")
-	println("port: 		",	Config.port)
+	println("port:		",	Config.port)
 	println("portproxy:	", Config.portproxy)
 	println("dir:		", Config.dir)
 	println("ignores:	", Config.ignores)
@@ -54,6 +54,11 @@ func main() {
 	println("-------------------------------------------------------------------------")
 
 	http.HandleFunc("/", dispatch)
+
+	Config.pipchan = make(chan bool)
+
+	// Stare Watcher
+	Watcher(Config.dir)
 
 	err := http.ListenAndServe(port, nil)
 	if err != nil {

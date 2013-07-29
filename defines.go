@@ -1,11 +1,24 @@
 package main
 
+import (
+	"net"
+	"bufio"
+)
+
 var Config struct {
-	port 		int
+	port			int
 	portproxy	int
-	dir 		string
-	ignores 	string
+	dir				string
+	ignores		string
+	pipchan		chan bool
 }
+
+// Store client buffer handle
+type Client struct {
+	bufrw  *bufio.ReadWriter
+	conn net.Conn
+}
+var Clients = make([]Client, 0)
 
 var TmplHeader = `
 <!DOCTYPE html>
@@ -97,4 +110,18 @@ var TmplFooter = `
     </div>
   </body>
 </html>
+`
+var Tmplpolljs = `
+<script style="text/javascript">
+window.onload = function(){
+  setTimeout(function(){
+    var js = document.createElement('script');
+    js.src = "/_longpolling.js";
+    document.getElementsByTagName("head")[0].appendChild(js);
+    if(window.console && console.log) {
+      console.log("orange watcher js is append");
+    }
+  }, 800);
+}
+</script>
 `
