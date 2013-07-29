@@ -13,11 +13,14 @@ var Config struct {
 	pipchan		chan bool
 }
 
+const VERSION = "orange/2.4"
+
 // Store client buffer handle
 type Client struct {
 	bufrw  *bufio.ReadWriter
 	conn net.Conn
 }
+
 var Clients = make([]Client, 0)
 
 var TmplHeader = `
@@ -119,7 +122,7 @@ window.onload = function(){
     js.src = "/_longpolling.js";
     document.getElementsByTagName("head")[0].appendChild(js);
     if(window.console && console.log) {
-      console.log("orange watcher js is append");
+      console.log("["+ new Date() +"]orange watcher js is working.");
     }
   }, 800);
 }

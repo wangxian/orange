@@ -14,6 +14,7 @@ import (
 	"flag"
 	"strconv"
 	"net/http"
+	"github.com/toqueteos/webbrowser"
 )
 
 // Hander http request
@@ -37,7 +38,7 @@ func main() {
 	flag.IntVar(&Config.port, "port", 4000, "Static server port, The port must>1024, default 4000")
 	flag.IntVar(&Config.portproxy, "portproxy", 0, "Proxy http://localhost:{{port}}/ when file saved refresh browser, set 0 not proxy")
 	flag.StringVar(&Config.dir, "dir", "./", "Watch dir which change will refresh the browser, default current dir")
-	flag.StringVar(&Config.ignores, "ignores", "", "Not watch files, split width `,` Not regexp like `.go,.git/`, default not ignore")
+	flag.StringVar(&Config.ignores, "ignores", "", "Not watch files, split width `,` Not regexp like `.go,.git/`, default no ignores")
 	flag.Parse()
 
 	os.Chdir(Config.dir)
@@ -59,6 +60,9 @@ func main() {
 
 	// Stare Watcher
 	Watcher(Config.dir)
+
+	// open browser
+	webbrowser.Open("http://localhost"+ port)
 
 	err := http.ListenAndServe(port, nil)
 	if err != nil {

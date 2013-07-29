@@ -26,12 +26,11 @@ func Watcher(path string) {
 		log.Fatal(err)
 	}
 
-	ignoresList := []string{}
+	ignoresList := []string{".git", ".svn"}
 	if Config.ignores != "" {
 		ignoresList = strings.Split(Config.ignores, ",")
 	}
 	// log.Println(ignoresList)
-
 
 	go func() {
 		for {
@@ -47,8 +46,10 @@ func Watcher(path string) {
 				eventTime[e.String()] = time.Now()
 
 				if changed {
-					// log.Println(Clients)
+					log.Println(e.String())
 					RefreshBrowser()
+
+					//@todo: do someting here, eg: precommand
 				}
 				// log.Println(e.String())
 

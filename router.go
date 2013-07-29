@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"strings"
+	"strconv"
 	"log"
 	"fmt"
 	"os"
@@ -21,7 +22,8 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 	// println(r.Header.Get("Accept-Language"))
 	// println(r.Header.Get("Pragma"))
 	// println(r.Header.Get("Connection"))
-	w.Header().Add("Server", "orange/1.1")
+	w.Header().Add("Server", VERSION)
+	w.Header().Add("Cache-Control", "no-cache")
 
 	path := Config.dir + r.URL.Path
 	stat, err := os.Stat(path)
@@ -97,6 +99,45 @@ func RefreshBrowser() {
 	Clients = make([]Client, 0)
 }
 
-
 func ProxySite(w http.ResponseWriter, r *http.Request) {
+	url := "http://127.0.0.1:"+ strconv.Itoa(Config.portproxy) + r.URL.Path
+	if request, err := http.NewRequest(r.Method, url, r.Body); err == nil {
+		request.Header.Add("X-Forwarded-For", strings.Split(r.RemoteAddr, ":")[0])
+		// Host is removed from r.Header by go
+		for k, values := range r.Header {
+			for _, v := range values {
+				request.Header.Add(k, v)
+			}
+		}
+		request.ContentLength = r.ContentLength
+		request.Close = true
+
+		// do not follow any redirect， browser will do that
+		if resp, err := http.DefaultTransport.RoundTrip(request); err == nil {
+			for k, values := range resp.Header {
+				for _, v := range values {
+					// Transfer-Encoding:chunked, for append reload hook
+					if k != "Content-Length" {
+						if k == "Server" {
+							v = VERSION
+						}
+						w.Header().Add(k, v)
+					}
+				}
+			}
+
+			defer resp.Body.Close()
+
+			w.Header().Set("Cache-Control", "no-cache")
+			w.WriteHeader(resp.StatusCode)
+			io.Copy(w, resp.Body)
+			w.Write([]byte(Tmplpolljs))
+
+		} else {
+			log.Println(err)
+		}
+
+	} else {
+		log.Println(err)
+	}
 }
