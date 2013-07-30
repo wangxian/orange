@@ -3,11 +3,34 @@ package main
 import (
 	"github.com/howeyc/fsnotify"
 	"path/filepath"
+	"os/exec"
 	"strings"
+	"bytes"
 	"time"
 	"log"
 	"os"
 )
+
+func BeforePreload(filename string) {
+	if len(Config.precmd) == 0 {
+		return
+	}
+
+	precmd := strings.Replace(Config.precmd, "{0}", filename, -1)
+	PrecmdList := strings.Split(precmd, " ")
+	// log.Println(PrecmdList[1:])
+
+	cmd := exec.Command(PrecmdList[0], PrecmdList[1:]...)
+	// cmd.Stdin = strings.NewReader("some input")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+
+	if err != nil {
+	    log.Fatal(err)
+	}
+	println(out.String())
+}
 
 func ignoresFilter(ignoresList *[]string, path string) bool {
 	for _, v := range *ignoresList {
@@ -18,19 +41,26 @@ func ignoresFilter(ignoresList *[]string, path string) bool {
 	return false
 }
 
+// fixed: File change soon
 var eventTime = make(map[string]time.Time)
 
 func Watcher(path string) {
+	ignoresList := []string{}
+	if Config.ignores != "" {
+		if Config.ignores == "." {
+			log.Println("watch ignore all")
+			return
+		}
+		ignoresList = strings.Split(Config.ignores, ",")
+	}
+	ignoresList = append(ignoresList, ".git")
+	ignoresList = append(ignoresList, ".svn")
+	log.Println("ignoresList:", ignoresList)
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	ignoresList := []string{".git", ".svn"}
-	if Config.ignores != "" {
-		ignoresList = strings.Split(Config.ignores, ",")
-	}
-	// log.Println(ignoresList)
 
 	go func() {
 		for {
@@ -49,6 +79,7 @@ func Watcher(path string) {
 					log.Println(e.String())
 					RefreshBrowser()
 
+					BeforePreload(e.Name)
 					//@todo: do someting here, eg: precommand
 				}
 				// log.Println(e.String())

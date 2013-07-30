@@ -8,9 +8,10 @@ import (
 var Config struct {
 	port			int
 	portproxy	int
+  precmd		string
 	dir				string
 	ignores		string
-	pipchan		chan bool
+	// pipchan		chan bool
 }
 
 const VERSION = "orange/2.4"
