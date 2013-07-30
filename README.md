@@ -46,7 +46,9 @@ Move orange file to your `$PATH`
 
 If you have already installed the golang
 
-  go get -u http://github.com/wangxian/orange
+```sh
+go get -u http://github.com/wangxian/orange
+```
 
 THEN add your `$GOPATH/bin` to your `$PATH`
 
