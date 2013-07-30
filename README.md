@@ -18,7 +18,14 @@ Usage of orange:
   -precmd="": Before refresh browser, execute precmd command. eg: `ls {0}`, {0} is the changed file
 ```
 
-# Features
+eg:
+
+```sh
+cd ~/Sites/
+orange -portproxy 80 -dir ~/Sites/blog/ -ignores .cache,.db
+```
+
+### Notes
 
 1. If you don't want to monitor files, set `orange -ignores .`
 2. If you want ignore some dirs, eg: `orange -ignores ".git,.svn,dirs"`
@@ -35,11 +42,13 @@ Binaries
 - [Windows](http://x/)
 - [Linux](http://x/)
 
+Move orange file to your `$PATH`
+
 If you have already installed the golang
 
   go get -u http://github.com/wangxian/orange
 
-THEN add your $GOPATH/bin to your $PATH
+THEN add your `$GOPATH/bin` to your `$PATH`
 
 # License
 
