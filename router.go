@@ -26,12 +26,32 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Cache-Control", "no-cache")
 
 	path := Config.dir + r.URL.Path
-	stat, err := os.Stat(path)
+	f, err := os.Open(path)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(404)
+		return
+	}
+	defer f.Close()
+
+	stat, err := f.Stat()
 	if os.IsNotExist(err) {
 		fmt.Fprintf(w, "Error 404:\r\n"+ path +" is not exist.")
 	} else if stat.IsDir() {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		htmldir := ""
+		if dirs, err := f.Readdir(-1); err == nil {
+			for _, d := range dirs {
+				if d.IsDir() {
+					htmldir += "<a href=\""+ d.Name() +"/\">"+ d.Name() +"/</a>\n"
+				} else {
+					htmldir += "<a href=\""+ d.Name() +"\">"+ d.Name() +"</a>\n"
+				}
+			}
+		}
 		fmt.Fprintf(w, TmplHeader +"<h1>"+ r.URL.Path +"</h1>" + `<a href="../" id="goback">..</a>`)
-		http.ServeFile(w, r, path)
+		// http.ServeFile(w, r, path)
+		fmt.Fprintf(w, "<pre>"+ htmldir +"</pre>")
 		fmt.Fprintf(w, TmplFooter)
 	} else {
 

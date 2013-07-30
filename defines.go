@@ -123,7 +123,7 @@ window.onload = function(){
     js.src = "/_longpolling.js";
     document.getElementsByTagName("head")[0].appendChild(js);
     if(window.console && console.log) {
-      console.log("["+ new Date() +"]orange watcher js is working.");
+      console.log("["+ (new Date()).toLocaleString() +"]orange watcher js is working.");
     }
   }, 800);
 }
