@@ -10,12 +10,15 @@ Support: WEB dev, PHP, Node.js, Python, etc...
 # Usage
 
 ```shell
+
 Usage of orange:
-  -dir="./": Watch dir which change will refresh the browser, default current dir
   -ignores="": Not watch files, split width `,` Not regexp eg: `.go,.git/`, default no ignores
   -port=4000: Static server port, The port must>1024, default 4000
   -portproxy=0: Proxy http://localhost:{{port}}/ when file saved refresh browser, set 0 not proxy
   -precmd="": Before refresh browser, execute precmd command. eg: `ls {0}`, {0} is the changed file
+  -rootdir="./": Server root dir, default current dir
+  -watchdir="./": Watch dir which change will refresh the browser, default current dir
+
 ```
 
 eg:
