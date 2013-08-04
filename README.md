@@ -42,7 +42,8 @@ orange -portproxy 80 -dir ~/Sites/blog/ -ignores .cache,.db
 Binaries
 
 - [Mac OSX 10.8+](#)
-- [Windows bit64](#)
+- [Windows 64bit](#)
+- [Windows 32bit](#)
 - [Linux](#)
 
 Move orange file to your `$PATH`
