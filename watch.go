@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 	"os/exec"
 	"strings"
-	"bytes"
 	"time"
 	"log"
 	"os"
@@ -21,15 +20,9 @@ func BeforePreload(filename string) {
 	// log.Println(PrecmdList[1:])
 
 	cmd := exec.Command(PrecmdList[0], PrecmdList[1:]...)
-	// cmd.Stdin = strings.NewReader("some input")
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err := cmd.Run()
-
-	if err != nil {
-	    log.Fatal(err)
-	}
-	println(out.String())
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	go cmd.Run()
 }
 
 func ignoresFilter(ignoresList *[]string, path string) bool {
