@@ -25,7 +25,7 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Server", VERSION)
 	w.Header().Add("Cache-Control", "no-cache")
 
-	path := Config.dir + r.URL.Path
+	path := Config.rootdir + r.URL.Path
 	f, err := os.Open(path)
 	if err != nil {
 		log.Println(err)
@@ -62,7 +62,11 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "text/html")
 			w.WriteHeader(200)
 			io.Copy(w, f)
-			w.Write([]byte(Tmplpolljs))
+
+			// if ignore all, not append js
+			if Config.ignores != "." {
+				w.Write([]byte(Tmplpolljs))
+			}
 
 			return
 		}

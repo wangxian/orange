@@ -69,7 +69,7 @@ func Watcher(path string) {
 
 				changed := true
 				if t, ok := eventTime[e.String()]; ok {
-					if t.Add(time.Millisecond * 800).After(time.Now()) {
+					if t.Add(time.Millisecond * 1200).After(time.Now()) {
 						changed = false
 					}
 				}
