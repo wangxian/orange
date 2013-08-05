@@ -34,19 +34,19 @@ orange -portproxy 80 -dir ~/Sites/blog/ -ignores .cache,.db
 2. If you want ignore some dirs, eg: `orange -ignores ".git,.svn,dirs"`
 3. If you want run command when file change, set `-precmd` eg: `orange -precmd "du -sh {0}"
 4. For PHP/Node.js/etc... , You can proxy your proxy, eg: proxy apache `orange -portproxy 80`
-5. If not port proxy, cd your dir, run orange , view a html file when current dir files change, browser will refresh automatically
-6. When start, `Open("http://localhost"+ your port)` in your Browser
+5. If not port proxy, cd your dir, run orange, view a html file when current dir files change, browser will refresh automatically
+6. When start, `Automatically Open URL http://localhost:${yourport}` in your Browser
 
 # Downloads
 
 Binaries
 
-- [Mac OSX 10.8+](#)
+- [Mac OSX 10.8+](https://www.dropbox.com/s/t1ewa0wavmfuixt/orange-osx-2.4)
 - [Windows 64bit](#)
 - [Windows 32bit](#)
 - [Linux](#)
 
-Move orange file to your `$PATH`
+Rename `orange-xxx-$VERSION` to `orange`, And move orange file to your `$PATH`
 
 If you have already installed the golang
 

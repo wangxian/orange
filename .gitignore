@@ -24,3 +24,5 @@ _testmain.go
 .DS_Store
 
 orange
+
+*.4
