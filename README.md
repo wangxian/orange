@@ -51,7 +51,7 @@ Rename `orange-xxx-$VERSION` to `orange`, And move orange file to your `$PATH`
 If you have already installed the golang
 
 ```sh
-go get -u http://github.com/wangxian/orange
+go get -u github.com/wangxian/orange
 ```
 
 THEN add your `$GOPATH/bin` to your `$PATH`
