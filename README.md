@@ -42,9 +42,9 @@ orange -proxy 80 -watchdir ~/Sites/blog/ -ignores .cache,.db
 Binaries
 
 - [Mac OSX 10.8+](https://www.dropbox.com/s/t1ewa0wavmfuixt/orange-osx-2.4)
-- [Windows 64bit](#)
-- [Windows 32bit](#)
-- [Linux](#)
+- [Windows 64bit](https://www.dropbox.com/s/prkzjecs7o76r87/orange-win64-2.4.exe)
+- [Windows 32bit](https://www.dropbox.com/s/o8uk0fi4gtw2tph/orange-win32-2.4.exe)
+- [Linux](https://www.dropbox.com/s/8gvg7b3fq3anru1/orange-linux-2.4)
 
 Rename `orange-xxx-$VERSION` to `orange`, And move orange file to your `$PATH`
 
