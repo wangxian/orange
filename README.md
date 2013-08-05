@@ -12,20 +12,20 @@ Support: WEB dev, PHP, Node.js, Python, etc...
 ```shell
 
 Usage of orange:
+  -http=":4000": Static server port, The port must>1024, default :4000
   -ignores="": Not watch files, split width `,` Not regexp eg: `.go,.git/`, default no ignores
-  -port=4000: Static server port, The port must>1024, default 4000
-  -portproxy=0: Proxy http://localhost:{{port}}/ when file saved refresh browser, set 0 not proxy
   -precmd="": Before refresh browser, execute precmd command. eg: `ls {0}`, {0} is the changed file
+  -proxy="": Proxy webserver when file saved refresh browser, like :80
   -rootdir="./": Server root dir, default current dir
   -watchdir="./": Watch dir which change will refresh the browser, default current dir
-
+  
 ```
 
 eg:
 
 ```sh
 cd ~/Sites/
-orange -portproxy 80 -dir ~/Sites/blog/ -ignores .cache,.db
+orange -proxy 80 -watchdir ~/Sites/blog/ -ignores .cache,.db
 ```
 
 ### Notes

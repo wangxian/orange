@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"strings"
-	"strconv"
 	"log"
 	"fmt"
 	"os"
@@ -124,7 +123,7 @@ func RefreshBrowser() {
 }
 
 func ProxySite(w http.ResponseWriter, r *http.Request) {
-	url := "http://127.0.0.1:"+ strconv.Itoa(Config.portproxy) + r.URL.Path
+	url := Config.proxy + r.URL.Path
 	if request, err := http.NewRequest(r.Method, url, r.Body); err == nil {
 		request.Header.Add("X-Forwarded-For", strings.Split(r.RemoteAddr, ":")[0])
 		// Host is removed from r.Header by go

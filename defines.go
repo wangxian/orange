@@ -6,8 +6,8 @@ import (
 )
 
 var Config struct {
-	port			int
-	portproxy	int
+	http		string
+	proxy		string
 	precmd		string
 	rootdir		string
 	watchdir	string

@@ -15,7 +15,7 @@ import (
 	"os"
 	"log"
 	"flag"
-	"strconv"
+	"strings"
 	"net/http"
 	"github.com/toqueteos/webbrowser"
 )
@@ -26,10 +26,10 @@ func dispatch(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if r.URL.Path == "/_longpolling.js" {
 		LongPolling(w, r)
-	} else if Config.portproxy == 0 {
-		ServeFile(w, r)
-	} else {
+	} else if Config.proxy != "" {
 		ProxySite(w, r)
+	} else {
+		ServeFile(w, r)
 	}
 }
 
@@ -38,8 +38,8 @@ func dispatch(w http.ResponseWriter, r *http.Request) {
 // }
 
 func main() {
-	flag.IntVar(&Config.port, "port", 4000, "Static server port, The port must>1024, default 4000")
-	flag.IntVar(&Config.portproxy, "portproxy", 0, "Proxy http://localhost:{{port}}/ when file saved refresh browser, set 0 not proxy")
+	flag.StringVar(&Config.http, "http", ":4000", "Static server port, The port must>1024, default :4000")
+	flag.StringVar(&Config.proxy, "proxy", "", "Proxy webserver when file saved refresh browser, like :80")
 	flag.StringVar(&Config.rootdir, "rootdir", "./", "Server root dir, default current dir")
 	flag.StringVar(&Config.watchdir, "watchdir", "./", "Watch dir which change will refresh the browser, default current dir")
 	flag.StringVar(&Config.ignores, "ignores", "", "Not watch files, split width `,` Not regexp eg: `.go,.git/`, default no ignores")
@@ -56,28 +56,51 @@ func main() {
 	os.Chdir(Config.watchdir)
 	Config.watchdir, _ = os.Getwd()
 
-	println("-------------------------------------------------------------------------")
-	println("port:		",	Config.port)
-	println("portproxy:	", Config.portproxy)
-	println("dir:		", Config.rootdir)
-	println("watchdir:	", Config.watchdir)
-	println("ignores:	", Config.ignores)
-	println("precmd:	", Config.precmd)
+	if ! strings.Contains(Config.http, ":") {
+		log.Fatal("Config.http must Contains `:`")
+	}
 
-	port := ":" + strconv.Itoa(Config.port)
-	println("HostAt: 	 http://0.0.0.0"+ port +"/")
+	httpList := strings.Split(Config.http, ":")
+	openURL  := ""
+	if httpList[0] == "" {
+		openURL = "http://localhost:"+ httpList[1] +"/"
+	} else {
+		openURL = "http://"+ Config.http +"/"
+	}
+
+	if Config.proxy != "" {
+		if ! strings.Contains(Config.proxy, ":") {
+			log.Fatal("Config.proxy must Contains `:`")
+		}
+
+		proxyList := strings.Split(Config.proxy, ":")
+		if proxyList[0] == "" {
+			Config.proxy = "http://127.0.0.1:"+ proxyList[1]
+		} else {
+			Config.proxy = "http://"+ Config.proxy
+		}
+	}
+
 	println("-------------------------------------------------------------------------")
-	// println(Config.ignores != "" && Config.ignores != ".")
-	// os.Exit(1)
+	println("http	:", Config.http)
+	println("proxy	:", Config.proxy)
+	println("rootdir	:", Config.rootdir)
+	println("watchdir:", Config.watchdir)
+	println("ignores	:", Config.ignores)
+	println("precmd	:", Config.precmd)
+
+	println("HostAt	:", openURL)
+	println("-------------------------------------------------------------------------")
+
 	http.HandleFunc("/", dispatch)
 
 	// Start Watcher
 	Watcher(Config.watchdir)
 
-	// open browser
-	webbrowser.Open("http://localhost"+ port)
+	// Open browser
+	webbrowser.Open(openURL)
 
-	err := http.ListenAndServe(port, nil)
+	err := http.ListenAndServe(Config.http, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
