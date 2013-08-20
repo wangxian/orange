@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 //
-// Test Run: go run defines.go orange.go --port 4000 --dir ../ --portproxy 80 --ignores .go -precmd "ls -lhr"
 // INSTALL: go install
 //
 // @Author: wangxian
@@ -38,12 +37,17 @@ func dispatch(w http.ResponseWriter, r *http.Request) {
 // }
 
 func main() {
-	flag.StringVar(&Config.http, "http", ":4000", "Static server port, The port must>1024, default :4000")
-	flag.StringVar(&Config.proxy, "proxy", "", "Proxy webserver when file saved refresh browser, like :80")
-	flag.StringVar(&Config.rootdir, "rootdir", "./", "Server root dir, default current dir")
-	flag.StringVar(&Config.watchdir, "watchdir", "./", "Watch dir which change will refresh the browser, default current dir")
-	flag.StringVar(&Config.ignores, "ignores", "", "Not watch files, split width `,` Not regexp eg: `.go,.git/`, default no ignores")
-	flag.StringVar(&Config.precmd, "precmd", "", "Before refresh browser, execute precmd command. eg: `ls {0}`, {0} is the changed file")
+	flag.StringVar(&Config.http,    "http",    ":4000", "Static server port, The port must>1024, default :4000")
+	flag.StringVar(&Config.proxy,   "proxy",   "",      "Proxy webserver when file saved refresh browser, like :80")
+	flag.StringVar(&Config.rootdir, "rootdir", "./",    "Server root dir, default current dir")
+	flag.StringVar(&Config.watchdir,"watchdir","./",    "Watch dir which change will refresh the browser, default current dir")
+	flag.StringVar(&Config.ignores, "ignores", "",      "Not watch files, split width `,` Not regexp eg: `.go,.git/`, default no ignores")
+	flag.StringVar(&Config.precmd,  "precmd",  "",      "Before refresh browser, execute precmd command. eg: `ls {0}`, {0} is the changed file")
+
+	flag.StringVar(&Config.rootdir,	 "r", "./", "Alias -rootdir")
+	flag.StringVar(&Config.watchdir, "w", "./", "Alias -watchdir")
+	flag.StringVar(&Config.ignores,  "i", "",   "Alias -ignores")
+
 	flag.Parse()
 
 	// Current dir

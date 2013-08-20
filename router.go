@@ -28,7 +28,8 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 	f, err := os.Open(path)
 	if err != nil {
 		log.Println(err)
-		w.WriteHeader(404)
+		// w.WriteHeader(404)
+		fmt.Fprintf(w, "Error 404:\r\n"+ path +" is not exist.")
 		return
 	}
 	defer f.Close()
