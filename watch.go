@@ -35,7 +35,8 @@ func ignoresFilter(ignoresList *[]string, path string) bool {
 }
 
 // fixed: File change soon
-var eventTime = make(map[string]time.Time)
+// var eventTime = make(map[string]time.Time)
+var changeTime time.Time;
 
 func Watcher(path string) {
 	ignoresList := []string{}
@@ -61,21 +62,41 @@ func Watcher(path string) {
 			case e := <-watcher.Event:
 
 				changed := true
-				if t, ok := eventTime[e.String()]; ok {
-					if t.Add(time.Millisecond * 1200).After(time.Now()) {
-						changed = false
-					}
-				}
-				eventTime[e.String()] = time.Now()
+				// if t, ok := eventTime[e.String()]; ok {
+				// 	if t.Add(time.Millisecond * 1200).After(time.Now()) {
+				// 		changed = false
+				// 	}
+				// }
+				// eventTime[e.String()] = time.Now()
 
-				if changed {
-					log.Println(e.String())
-					RefreshBrowser()
+				// if changed {
+				// 	log.Println(e.String())
+				// 	RefreshBrowser()
 
-					BeforePreload(e.Name)
-					//@todo: do someting here, eg: precommand
+				// 	BeforePreload(e.Name)
+				// 	//@todo: do someting here, eg: precommand
+				// }
+				// // log.Println(e.String())
+
+				if changeTime.Add(time.Millisecond * 2000).After(time.Now()) {
+					changed = false
 				}
+
 				// log.Println(e.String())
+				// log.Println( filepath.Ext(e.Name) )
+				fileExt := filepath.Ext(e.Name)
+				if changed &&  (fileExt == ".html" || fileExt == ".css" || fileExt == ".js") {
+					changeTime = time.Now()
+
+					log.Println(e.String())
+					log.Println("Refresh Browser ...")
+
+					println("\n\n-------------------------------------------------")
+					RefreshBrowser()
+					BeforePreload(e.Name)
+				}
+
+
 
 			case err := <-watcher.Error:
 				log.Fatal("watcher.Error:", err)

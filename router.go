@@ -12,7 +12,6 @@ import (
 )
 
 func ServeFile(w http.ResponseWriter, r *http.Request) {
-	log.Print(r.URL.Path)
 
 	// println(r.Header.Get("accept"))
 	// println(r.Header.Get("host"))
@@ -27,8 +26,9 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 	path := Config.rootdir + r.URL.Path
 	f, err := os.Open(path)
 	if err != nil {
-		log.Println(err)
-		// w.WriteHeader(404)
+		// log.Println(err)
+		w.WriteHeader(404)
+		log.Print("\u001b[32m", r.URL.Path, "\u001b[0m \u001b[31m404\u001b[0m")
 		fmt.Fprintf(w, "Error 404:\r\n"+ path +" is not exist.")
 		return
 	}
@@ -36,8 +36,11 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 
 	stat, err := f.Stat()
 	if os.IsNotExist(err) {
+		w.WriteHeader(404)
+		log.Print("\u001b[32m", r.URL.Path, "\u001b[0m \u001b[31m404\u001b[0m")
 		fmt.Fprintf(w, "Error 404:\r\n"+ path +" is not exist.")
 	} else if stat.IsDir() {
+		log.Print(r.URL.Path, " 200")
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		htmldir := ""
 		if dirs, err := f.Readdir(-1); err == nil {
@@ -54,7 +57,7 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "<pre>"+ htmldir +"</pre>")
 		fmt.Fprintf(w, TmplFooter)
 	} else {
-
+		log.Print("\u001b[32m", r.URL.Path, "\u001b[0m \u001b[36m200\u001b[0m")
 		if strings.Contains(r.URL.Path, ".html") {
 			f, _ := os.Open(path)
 			defer f.Close()
@@ -67,7 +70,6 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 			if Config.ignores != "." {
 				w.Write([]byte(Tmplpolljs))
 			}
-
 			return
 		}
 

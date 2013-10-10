@@ -11,11 +11,11 @@ var Config struct {
 	precmd		string
 	rootdir		string
 	watchdir	string
+	openURL		string
 	ignores		string
-	// pipchan		chan bool
 }
 
-const VERSION = "orange/2.4"
+const VERSION = "orange/2.5"
 
 // Store client buffer handle
 type Client struct {
