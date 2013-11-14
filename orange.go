@@ -40,13 +40,13 @@ func main() {
 	flag.StringVar(&Config.http,    "http",    	":4000", "Static server port, The port must>1024, default :4000")
 	flag.StringVar(&Config.proxy,   "proxy",   	"",      "Proxy webserver when file saved refresh browser, like :80")
 	flag.StringVar(&Config.rootdir, "rootdir", 	"./",    "Server root dir, default current dir")
-	flag.StringVar(&Config.watchdir,"watchdir",	"./",    "Watch dir which change will refresh the browser, default current dir")
+	flag.StringVar(&Config.watchdir,"watchdir",	"",      "Watch dir which change will refresh the browser, default watch Nothing")
 	flag.StringVar(&Config.openURL, "openurl", 	"/",     "Open URL in browser. eg: /dir/apps/, default '/'")
 	flag.StringVar(&Config.ignores, "ignores", 	"",      "Not watch files, split width `,` Not regexp eg: `.go,.git/`, default no ignores")
 	flag.StringVar(&Config.precmd,  "precmd",  	"",      "Before refresh browser, execute precmd command. eg: `ls {0}`, {0} is the changed file")
 
 	flag.StringVar(&Config.rootdir,	 "r", "./", "Alias -rootdir")
-	flag.StringVar(&Config.watchdir, "w", "./", "Alias -watchdir")
+	flag.StringVar(&Config.watchdir, "w", "",   "Alias -watchdir")
 	flag.StringVar(&Config.openURL,  "o", "/", 	"Alias -openurl")
 	flag.StringVar(&Config.ignores,  "i", "",   "Alias -ignores")
 
@@ -58,9 +58,11 @@ func main() {
 	os.Chdir(Config.rootdir)
 	Config.rootdir, _ = os.Getwd()
 
-	os.Chdir(curdir)
-	os.Chdir(Config.watchdir)
-	Config.watchdir, _ = os.Getwd()
+	if Config.watchdir != "" {
+		os.Chdir(curdir)
+		os.Chdir(Config.watchdir)
+		Config.watchdir, _ = os.Getwd()
+	}
 
 	if ! strings.Contains(Config.http, ":") {
 		log.Fatal("Config.http must Contains `:`")
@@ -101,7 +103,9 @@ func main() {
 	http.HandleFunc("/", dispatch)
 
 	// Start Watcher
-	Watcher(Config.watchdir)
+	if Config.watchdir != "" {
+		Watcher(Config.watchdir)
+	}
 
 	// Open browser
 	webbrowser.Open(openURL + Config.openURL)
