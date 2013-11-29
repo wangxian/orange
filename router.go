@@ -67,9 +67,10 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 			io.Copy(w, f)
 
 			// if ignore all, not append js
-			if Config.ignores != "." {
-				w.Write([]byte(Tmplpolljs))
-			}
+			// if Config.ignores != "." {
+			// 	w.Write([]byte(Tmplpolljs))
+			// }
+			w.Write([]byte(Tmplpolljs))
 			return
 		}
 
@@ -154,10 +155,17 @@ func ProxySite(w http.ResponseWriter, r *http.Request) {
 
 			defer resp.Body.Close()
 
+			log.Print("\u001b[32m", r.URL.Path, "\u001b[0m \u001b[36m", resp.StatusCode, "\u001b[0m")
+
 			w.Header().Set("Cache-Control", "no-cache")
 			w.WriteHeader(resp.StatusCode)
 			io.Copy(w, resp.Body)
-			w.Write([]byte(Tmplpolljs))
+
+			// Usually assets/ or static/ is static file dir
+			// if !strings.Contains(r.URL.Path, "assets/") && !strings.Contains(r.URL.Path, "static/") && !strings.Contains(r.URL.Path, ".css") && !strings.Contains(r.URL.Path, ".js") && !strings.Contains(r.URL.Path, ".png") && !strings.Contains(r.URL.Path, ".jpg") && !strings.Contains(r.URL.Path, ".gif") && !strings.Contains(r.URL.Path, ".ico") {
+			if !strings.Contains(r.URL.Path, "assets/") && !strings.Contains(r.URL.Path, "static/") {
+				w.Write([]byte(Tmplpolljs))
+			}
 
 		} else {
 			log.Println(err)
