@@ -1,6 +1,7 @@
 package main
 
 import (
+	"path/filepath"
 	"net/http"
 	"strings"
 	"log"
@@ -163,8 +164,14 @@ func ProxySite(w http.ResponseWriter, r *http.Request) {
 
 			// Usually assets/ or static/ is static file dir
 			// if !strings.Contains(r.URL.Path, "assets/") && !strings.Contains(r.URL.Path, "static/") && !strings.Contains(r.URL.Path, ".css") && !strings.Contains(r.URL.Path, ".js") && !strings.Contains(r.URL.Path, ".png") && !strings.Contains(r.URL.Path, ".jpg") && !strings.Contains(r.URL.Path, ".gif") && !strings.Contains(r.URL.Path, ".ico") {
-			if !strings.Contains(r.URL.Path, "assets/") && !strings.Contains(r.URL.Path, "static/") {
-				w.Write([]byte(Tmplpolljs))
+			if Config.watchdir != "" {
+				fileExt := filepath.Ext(r.URL.Path)
+				// log.Print("\u001b[32m", "extname:", fileExt, "\u001b[0m")
+				if !strings.Contains(".txt/.js/.css/.png/.jpg/.jpeg/.gif", fileExt) {
+					// log.Print("\u001b[32m", "----------extname:", fileExt, "\u001b[0m")
+					log.Print("Add Tmplpolljs after html file")
+					w.Write([]byte(Tmplpolljs))
+				}
 			}
 
 		} else {

@@ -85,7 +85,7 @@ func Watcher(path string) {
 				// log.Println(e.String())
 				// log.Println( filepath.Ext(e.Name) )
 				fileExt := filepath.Ext(e.Name)
-				if changed &&  (fileExt == ".html" || fileExt == ".css" || fileExt == ".js") {
+				if changed &&  strings.Contains(".html/.css/.js/.php/.py/.go", fileExt) {
 					changeTime = time.Now()
 
 					log.Println(e.String())

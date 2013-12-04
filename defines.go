@@ -15,7 +15,7 @@ var Config struct {
 	ignores		string
 }
 
-const VERSION = "orange/2.6"
+const VERSION = "orange/2.7"
 
 // Store client buffer handle
 type Client struct {
