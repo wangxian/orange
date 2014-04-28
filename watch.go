@@ -2,12 +2,12 @@ package main
 
 import (
 	"github.com/howeyc/fsnotify"
-	"path/filepath"
-	"os/exec"
-	"strings"
-	"time"
 	"log"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"time"
 )
 
 func BeforePreload(filename string) {
@@ -36,7 +36,7 @@ func ignoresFilter(ignoresList *[]string, path string) bool {
 
 // fixed: File change soon
 // var eventTime = make(map[string]time.Time)
-var changeTime time.Time;
+var changeTime time.Time
 
 func Watcher(path string) {
 	ignoresList := []string{}
@@ -78,14 +78,14 @@ func Watcher(path string) {
 				// }
 				// // log.Println(e.String())
 
-				if changeTime.Add(time.Millisecond * 2000).After(time.Now()) {
+				if changeTime.Add(time.Millisecond * 300).After(time.Now()) {
 					changed = false
 				}
 
 				// log.Println(e.String())
 				// log.Println( filepath.Ext(e.Name) )
 				fileExt := filepath.Ext(e.Name)
-				if changed &&  strings.Contains(".html/.css/.js/.php/.py/.go", fileExt) {
+				if changed && strings.Contains(".html/.css/.js/.php/.py/.go", fileExt) {
 					changeTime = time.Now()
 
 					log.Println(e.String())
@@ -95,8 +95,6 @@ func Watcher(path string) {
 					RefreshBrowser()
 					BeforePreload(e.Name)
 				}
-
-
 
 			case err := <-watcher.Error:
 				log.Fatal("watcher.Error:", err)

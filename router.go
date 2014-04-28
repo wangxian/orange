@@ -1,13 +1,13 @@
 package main
 
 import (
-	"path/filepath"
-	"net/http"
-	"strings"
-	"log"
 	"fmt"
-	"os"
 	"io"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	// "time"
 	// "html/template"
 )
@@ -30,7 +30,7 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 		// log.Println(err)
 		w.WriteHeader(404)
 		log.Print("\u001b[32m", r.URL.Path, "\u001b[0m \u001b[31m404\u001b[0m")
-		fmt.Fprintf(w, "Error 404:\r\n"+ path +" is not exist.")
+		fmt.Fprintf(w, "Error 404:\r\n"+path+" is not exist.")
 		return
 	}
 	defer f.Close()
@@ -39,7 +39,7 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 	if os.IsNotExist(err) {
 		w.WriteHeader(404)
 		log.Print("\u001b[32m", r.URL.Path, "\u001b[0m \u001b[31m404\u001b[0m")
-		fmt.Fprintf(w, "Error 404:\r\n"+ path +" is not exist.")
+		fmt.Fprintf(w, "Error 404:\r\n"+path+" is not exist.")
 	} else if stat.IsDir() {
 		log.Print(r.URL.Path, " 200")
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -47,15 +47,15 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 		if dirs, err := f.Readdir(-1); err == nil {
 			for _, d := range dirs {
 				if d.IsDir() {
-					htmldir += "<a href=\""+ d.Name() +"/\">"+ d.Name() +"/</a>\n"
+					htmldir += "<a href=\"" + d.Name() + "/\">" + d.Name() + "/</a>\n"
 				} else {
-					htmldir += "<a href=\""+ d.Name() +"\">"+ d.Name() +"</a>\n"
+					htmldir += "<a href=\"" + d.Name() + "\">" + d.Name() + "</a>\n"
 				}
 			}
 		}
-		fmt.Fprintf(w, TmplHeader +"<h1>"+ r.URL.Path +"</h1>" + `<a href="../" id="goback">..</a>`)
+		fmt.Fprintf(w, TmplHeader+"<h1>"+r.URL.Path+"</h1>"+`<a href="../" id="goback">..</a>`)
 		// http.ServeFile(w, r, path)
-		fmt.Fprintf(w, "<pre>"+ htmldir +"</pre>")
+		fmt.Fprintf(w, "<pre>"+htmldir+"</pre>")
 		fmt.Fprintf(w, TmplFooter)
 	} else {
 		log.Print("\u001b[32m", r.URL.Path, "\u001b[0m \u001b[36m200\u001b[0m")
@@ -82,7 +82,6 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 	// t, _ = t.Parse(TMPL)
 	// t.Execute(w, nil)
 }
-
 
 // Handler long polling request
 func LongPolling(w http.ResponseWriter, r *http.Request) {
@@ -162,9 +161,8 @@ func ProxySite(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(resp.StatusCode)
 			io.Copy(w, resp.Body)
 
-			// Usually assets/ or static/ is static file dir
-			// if !strings.Contains(r.URL.Path, "assets/") && !strings.Contains(r.URL.Path, "static/") && !strings.Contains(r.URL.Path, ".css") && !strings.Contains(r.URL.Path, ".js") && !strings.Contains(r.URL.Path, ".png") && !strings.Contains(r.URL.Path, ".jpg") && !strings.Contains(r.URL.Path, ".gif") && !strings.Contains(r.URL.Path, ".ico") {
-			if Config.watchdir != "" {
+			// Proxy add longpoll js
+			if len(Config.watchdir) > 0 {
 				fileExt := filepath.Ext(r.URL.Path)
 				// log.Print("\u001b[32m", "extname:", fileExt, "\u001b[0m")
 				if !strings.Contains(".txt/.js/.css/.png/.jpg/.jpeg/.gif", fileExt) {

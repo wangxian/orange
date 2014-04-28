@@ -11,12 +11,12 @@
 package main
 
 import (
-	"os"
-	"log"
 	"flag"
-	"strings"
-	"net/http"
 	"github.com/toqueteos/webbrowser"
+	"log"
+	"net/http"
+	"os"
+	"strings"
 )
 
 // Hander http request
@@ -36,19 +36,22 @@ func dispatch(w http.ResponseWriter, r *http.Request) {
 //     runtime.GOMAXPROCS(runtime.NumCPU())
 // }
 
-func main() {
-	flag.StringVar(&Config.http,    "http",    	":4000", "Static server port, The port must>1024, default :4000")
-	flag.StringVar(&Config.proxy,   "proxy",   	"",      "Proxy webserver when file saved refresh browser, like :80")
-	flag.StringVar(&Config.rootdir, "rootdir", 	"./",    "Server root dir, default current dir")
-	flag.StringVar(&Config.watchdir,"watchdir",	"",      "Watch dir which change will refresh the browser, default watch Nothing")
-	flag.StringVar(&Config.openURL, "openurl", 	"/",     "Open URL in browser. eg: /dir/apps/, default '/'")
-	flag.StringVar(&Config.ignores, "ignores", 	"",      "Not watch files, split width `,` Not regexp eg: `.go,.git/`, default no ignores")
-	flag.StringVar(&Config.precmd,  "precmd",  	"",      "Before refresh browser, execute precmd command. eg: `ls {0}`, {0} is the changed file")
+// watch Dir string from cli
+var watchdirStr string
 
-	flag.StringVar(&Config.rootdir,	 "r", "./", "Alias -rootdir")
-	flag.StringVar(&Config.watchdir, "w", "",   "Alias -watchdir")
-	flag.StringVar(&Config.openURL,  "o", "/", 	"Alias -openurl")
-	flag.StringVar(&Config.ignores,  "i", "",   "Alias -ignores")
+func main() {
+	flag.StringVar(&Config.http, "http", ":4000", "Static server port, The port must>1024, default :4000")
+	flag.StringVar(&Config.proxy, "proxy", "", "Proxy webserver when file saved refresh browser, like :80")
+	flag.StringVar(&Config.rootdir, "rootdir", "./", "Server root dir, default current dir")
+	flag.StringVar(&watchdirStr, "watchdir", "", "Watch dir which change will refresh the browser, default watch Nothing")
+	flag.StringVar(&Config.openURL, "openurl", "/", "Open URL in browser. eg: /dir/apps/, default '/'")
+	flag.StringVar(&Config.ignores, "ignores", "", "Not watch files, split width `,` Not regexp eg: `.go,.git/`, default no ignores")
+	flag.StringVar(&Config.precmd, "precmd", "", "Before refresh browser, execute precmd command. eg: `ls {0}`, {0} is the changed file")
+
+	flag.StringVar(&Config.rootdir, "r", "./", "Alias -rootdir")
+	flag.StringVar(&watchdirStr, "w", "", "Alias -watchdir")
+	flag.StringVar(&Config.openURL, "o", "/", "Alias -openurl")
+	flag.StringVar(&Config.ignores, "i", "", "Alias -ignores")
 
 	flag.Parse()
 
@@ -58,34 +61,39 @@ func main() {
 	os.Chdir(Config.rootdir)
 	Config.rootdir, _ = os.Getwd()
 
-	if Config.watchdir != "" {
-		os.Chdir(curdir)
-		os.Chdir(Config.watchdir)
-		Config.watchdir, _ = os.Getwd()
+	if watchdirStr != "" {
+		tList := strings.Split(watchdirStr, ",")
+		for _, v := range tList {
+			os.Chdir(curdir)
+			os.Chdir(v)
+
+			tPath, _ := os.Getwd()
+			Config.watchdir = append(Config.watchdir, tPath)
+		}
 	}
 
-	if ! strings.Contains(Config.http, ":") {
+	if !strings.Contains(Config.http, ":") {
 		log.Fatal("Config.http must Contains `:`")
 	}
 
 	httpList := strings.Split(Config.http, ":")
-	openURL  := ""
+	openURL := ""
 	if httpList[0] == "" {
-		openURL = "http://localhost:"+ httpList[1]
+		openURL = "http://localhost:" + httpList[1]
 	} else {
-		openURL = "http://"+ Config.http
+		openURL = "http://" + Config.http
 	}
 
 	if Config.proxy != "" {
-		if ! strings.Contains(Config.proxy, ":") {
+		if !strings.Contains(Config.proxy, ":") {
 			log.Fatal("Config.proxy must Contains `:`")
 		}
 
 		proxyList := strings.Split(Config.proxy, ":")
 		if proxyList[0] == "" {
-			Config.proxy = "http://127.0.0.1:"+ proxyList[1]
+			Config.proxy = "http://127.0.0.1:" + proxyList[1]
 		} else {
-			Config.proxy = "http://"+ Config.proxy
+			Config.proxy = "http://" + Config.proxy
 		}
 	}
 
@@ -93,7 +101,7 @@ func main() {
 	println("http	:", Config.http)
 	println("proxy	:", Config.proxy)
 	println("rootdir	:", Config.rootdir)
-	println("watchdir:", Config.watchdir)
+	println("watchdir:", watchdirStr)
 	println("ignores	:", Config.ignores)
 	println("precmd	:", Config.precmd)
 
@@ -103,8 +111,10 @@ func main() {
 	http.HandleFunc("/", dispatch)
 
 	// Start Watcher
-	if Config.watchdir != "" {
-		Watcher(Config.watchdir)
+	if len(Config.watchdir) > 0 {
+		for _, v := range Config.watchdir {
+			Watcher(v)
+		}
 	}
 
 	// Open browser

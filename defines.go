@@ -1,26 +1,26 @@
 package main
 
 import (
-	"net"
 	"bufio"
+	"net"
 )
 
 var Config struct {
-	http		string
-	proxy		string
-	precmd		string
-	rootdir		string
-	watchdir	string
-	openURL		string
-	ignores		string
+	http     string
+	proxy    string
+	precmd   string
+	rootdir  string
+	watchdir []string
+	openURL  string
+	ignores  string
 }
 
-const VERSION = "orange/2.7"
+const VERSION = "orange/2.8"
 
 // Store client buffer handle
 type Client struct {
-	bufrw  *bufio.ReadWriter
-	conn net.Conn
+	bufrw *bufio.ReadWriter
+	conn  net.Conn
 }
 
 var Clients = make([]Client, 0)
