@@ -15,7 +15,7 @@ var Config struct {
 	ignores  string
 }
 
-const VERSION = "orange/2.8"
+const VERSION = "orange/2.9"
 
 // Store client buffer handle
 type Client struct {
@@ -118,15 +118,18 @@ var TmplFooter = `
 `
 var Tmplpolljs = `
 <script style="text/javascript">
-window.onload = function(){
-  setTimeout(function(){
-    var js = document.createElement('script');
-    js.src = "/_longpolling.js";
-    document.getElementsByTagName("head")[0].appendChild(js);
-    if(window.console && console.log) {
-      console.log("["+ (new Date()).toLocaleString() +"]orange watcher js is working.");
-    }
-  }, 800);
-}
+(function(){
+  var oldOnload = window.onload ? window.onload : function(){};
+  window.onload = function(){
+    oldOnload() || setTimeout(function(){
+      var js = document.createElement('script');
+      js.src = "/_longpolling.js";
+      document.getElementsByTagName("head")[0].appendChild(js);
+      if(window.console && console.log) {
+        console.log("["+ (new Date()).toLocaleString() +"]orange watcher js is working.");
+      }
+    }, 800);
+  }
+}).call(this);
 </script>
 `

@@ -102,7 +102,7 @@ func LongPolling(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Clients = append(Clients, Client{bufrw, conn})
-	log.Println("Now Clients count:", len(Clients))
+	log.Println("[INFO]current clients ", len(Clients))
 
 	// changed := <- Config.pipchan
 	// log.Println("Hijack: ", changed, ", reload browser page.")
