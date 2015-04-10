@@ -92,6 +92,9 @@ func main() {
 		proxyList := strings.Split(Config.proxy, ":")
 		if proxyList[0] == "" {
 			Config.proxy = "http://127.0.0.1:" + proxyList[1]
+		} else if proxyList[1] == "80" {
+			// If proxy host port is 80, request don't contains 80
+			Config.proxy = "http://" + proxyList[0]
 		} else {
 			Config.proxy = "http://" + Config.proxy
 		}

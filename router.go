@@ -127,7 +127,7 @@ func RefreshBrowser() {
 }
 
 func ProxySite(w http.ResponseWriter, r *http.Request) {
-	url := Config.proxy + r.URL.Path
+	url := Config.proxy + r.URL.Path + "?" + r.URL.RawQuery
 	if request, err := http.NewRequest(r.Method, url, r.Body); err == nil {
 		request.Header.Add("X-Forwarded-For", strings.Split(r.RemoteAddr, ":")[0])
 		// Host is removed from r.Header by go
@@ -155,7 +155,7 @@ func ProxySite(w http.ResponseWriter, r *http.Request) {
 
 			defer resp.Body.Close()
 
-			log.Print("\u001b[32m", r.URL.Path, "\u001b[0m \u001b[36m", resp.StatusCode, "\u001b[0m")
+			log.Print("\u001b[32m", r.URL.Path+"?"+r.URL.RawQuery, "\u001b[0m \u001b[36m", resp.StatusCode, "\u001b[0m")
 
 			w.Header().Set("Cache-Control", "no-cache")
 			w.WriteHeader(resp.StatusCode)
