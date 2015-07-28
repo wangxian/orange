@@ -42,20 +42,20 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error 404:\r\n"+path+" is not exist.")
 	} else if stat.IsDir() {
 		log.Print(r.URL.Path, " 200")
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 		htmldir := ""
 		if dirs, err := f.Readdir(-1); err == nil {
 			for _, d := range dirs {
 				if d.IsDir() {
-					htmldir += "<a href=\"" + d.Name() + "/\">" + d.Name() + "/</a>\n"
+					htmldir += "<li><a href=\"" + d.Name() + "/\">" + d.Name() + "/</a></li>\n"
 				} else {
-					htmldir += "<a href=\"" + d.Name() + "\">" + d.Name() + "</a>\n"
+					htmldir += "<li><a href=\"" + d.Name() + "\">" + d.Name() + "</a></li>\n"
 				}
 			}
 		}
-		fmt.Fprintf(w, TmplHeader+"<h1>"+r.URL.Path+"</h1>"+`<a href="../" id="goback">..</a>`)
+		fmt.Fprintf(w, TmplHeader+"<h1>Directory listing for "+r.URL.Path +"</h1><hr/><ul><li>" + `<a href="../" id="goback">..</a></li>`)
 		// http.ServeFile(w, r, path)
-		fmt.Fprintf(w, "<pre>"+htmldir+"</pre>")
+		fmt.Fprintf(w, htmldir +"</ul><hr/>")
 		fmt.Fprintf(w, TmplFooter)
 	} else {
 		log.Print("\u001b[32m", r.URL.Path, "\u001b[0m \u001b[36m200\u001b[0m")
