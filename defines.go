@@ -15,7 +15,7 @@ var Config struct {
 	ignores  string
 }
 
-const VERSION = "orange/3.0.2"
+const VERSION = "orange/3.5"
 
 // Store client buffer handle
 type Client struct {
@@ -91,7 +91,7 @@ $(window).on('content loaded', function(){
     <div id="wrapper">
 `
 var TmplFooter = `
-    <p><em>X-Powered-By: `+ VERSION +`</em></p>
+    <p><em>X-Powered-By: ` + VERSION + `</em></p>
     </div>
   </body>
 </html>

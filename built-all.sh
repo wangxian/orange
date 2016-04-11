@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION=2.4
+VERSION=3.5
 
 mkdir -p bin/
 CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build

@@ -71,7 +71,10 @@ func ServeFile(w http.ResponseWriter, r *http.Request) {
 			// if Config.ignores != "." {
 			// 	w.Write([]byte(Tmplpolljs))
 			// }
-			w.Write([]byte(Tmplpolljs))
+			if len(Config.watchdir) > 0 {
+				w.Write([]byte(Tmplpolljs))
+			}
+
 			return
 		}
 
